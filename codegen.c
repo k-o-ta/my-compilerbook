@@ -2,6 +2,7 @@
 
 Node *code[100];
 
+/* 変数のアドレスを計算してスタックにプッシュする */
 void gen_lval(Node *node) {
   if (node->kind != ND_LVAR) error("代入の左辺値が変数ではありません");
   printf("  mov rax, rbp\n");
@@ -82,7 +83,7 @@ void code_gen() {
 
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
-  printf("  sub rsp, 208\n");
+  if (locals) printf("  sub rsp, %d\n", locals->offset);
 
   for (int i = 0; code[i]; i++) {
     gen(code[i]);

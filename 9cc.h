@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef enum {
   TK_RESERVED,
   TK_IDENT,
@@ -22,12 +21,21 @@ struct Token {
   int len;
 };
 
+typedef struct LVar LVar;
+struct LVar {
+  LVar *next;
+  char *name;
+  int len;
+  int offset;
+};
+
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 Token *tokenize(char *p);
 
 extern char *user_input;
 extern Token *token;
+extern LVar *locals;
 
 typedef enum {
   ND_ADD,
@@ -50,7 +58,7 @@ struct Node {
   Node *lhs;
   Node *rhs;
   int val;
-  int offset;
+  int offset; // ND_LVARのときだけ
 };
 
 extern Node *code[100];

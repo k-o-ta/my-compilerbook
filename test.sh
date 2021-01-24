@@ -50,5 +50,9 @@ assert 3 'a=3; a;'
 assert 4 'a=3; a+1;'
 assert 21 'a=5;b=20;c=4;a+b-c;'
 assert 41 'a=12;b=34;c=5; a + b - c;'
+assert 3 'foo=3; foo;'
+assert 4 'bar=3; bar+1;'
+assert 21 'foo=5;bar=20;baz=4;foo+bar-baz;'
+assert 41 'foo=12;bar=34;baz=5; foo + bar - baz;'
 
 echo OK
