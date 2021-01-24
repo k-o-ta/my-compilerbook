@@ -46,5 +46,9 @@ assert 1 '1>=0;'
 assert 1 '1>=1;'
 assert 0 '1>=2;'
 assert 3 '1; 2; 3;'
+assert 3 'a=3; a;'
+assert 4 'a=3; a+1;'
+assert 21 'a=5;b=20;c=4;a+b-c;'
+assert 41 'a=12;b=34;c=5; a + b - c;'
 
 echo OK
