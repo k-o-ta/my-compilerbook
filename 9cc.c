@@ -8,9 +8,9 @@ int main(int argc, char **argv) {
 
   user_input = argv[1];
   token = tokenize(user_input);
-  Node *node = expr();
+  program();
 
-  code_gen(node);
+  code_gen();
 
   return 0;
 }
