@@ -75,6 +75,7 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
 }
 
 bool startswith(char *p, char *q) { return memcmp(p, q, strlen(q)) == 0; }
+int is_alnum_or_u_bar(char c) { return (isalnum(c) || c == '-'); }
 
 Token *tokenize(char *p) {
   Token head;
@@ -84,6 +85,11 @@ Token *tokenize(char *p) {
   while (*p) {
     if (isspace(*p)) {
       p++;
+      continue;
+    }
+    if (startswith(p, "return") && !is_alnum_or_u_bar(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
       continue;
     }
 
@@ -156,7 +162,14 @@ void program() {
 }
 
 Node *stmt() {
-  Node *node = expr();
+  Node *node;
+  if (consume("return")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_RETURN;
+    node->lhs = expr();
+  } else {
+    node = expr();
+  }
   expect(";");
   return node;
 }
