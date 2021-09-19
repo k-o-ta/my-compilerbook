@@ -1,6 +1,7 @@
 #include "9cc.h"
 
 Node *code[100];
+unsigned long int label_num = 0;
 
 /* 変数のアドレスを計算してスタックにプッシュする */
 void gen_lval(Node *node) {
@@ -11,7 +12,8 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
-  switch (node->kind) {
+    unsigned long int label;
+    switch (node->kind) {
     case ND_NUM:
       printf("  push %d\n", node->val);
       return;
@@ -37,6 +39,28 @@ void gen(Node *node) {
       printf("  pop rbp\n");
       printf("  ret\n");
       return;
+    case ND_IF:
+      gen(node->lhs);
+      label = label_num++;
+      switch (node->rhs->kind) {
+          case ND_ELSE:
+              printf("  pop rax\n");
+              printf("  cmp rax, 0\n");
+              printf("  je .Lelse%ld\n", label);
+              gen(node->rhs->lhs);
+              printf("  jmp .Lend%ld\n", label);
+              printf(".Lelse%ld:\n", label);
+              gen(node->rhs->rhs);
+              printf(".Lend%ld:\n", label);
+              return;
+          default:
+              printf("  pop rax\n");
+              printf("  cmp rax, 0\n");
+              printf("  je .Lend%ld\n", label);
+              gen(node->rhs);
+              printf(".Lend%ld:\n", label);
+              return;
+      }
   }
 
   gen(node->lhs);

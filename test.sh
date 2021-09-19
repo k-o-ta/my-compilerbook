@@ -54,5 +54,9 @@ assert 3 'foo=3; return foo;'
 assert 4 'bar=3; return bar+1;'
 assert 21 'foo=5;bar=20;baz=4;return foo+bar-baz;'
 assert 41 'foo=12;bar=34;baz=5; return foo + bar - baz;'
+assert 12 'foo=12; if(foo == 12) return foo;'
+assert 2  'foo=12; if(foo == 13) return foo; return 2;'
+assert 34 'foo=12;bar=34;baz=5; if(foo == 12) return bar; else return baz;'
+assert 5  'foo=12;bar=34;baz=5; if(foo == 13) return bar; else return baz;'
 
 echo OK
