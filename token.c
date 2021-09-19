@@ -31,6 +31,24 @@ Token *tokenize(char *p) {
             continue;
         }
 
+        if (startswith(p, "if") && !is_alnum_or_u_bar(p[2])) {
+            cur = new_token(TK_RESERVED, cur, p, 2);
+            p += 2;
+            continue;
+        }
+
+        if (startswith(p, "while") && !is_alnum_or_u_bar(p[5])) {
+            cur = new_token(TK_RESERVED, cur, p, 5);
+            p += 5;
+            continue;
+        }
+
+        if (startswith(p, "for") && !is_alnum_or_u_bar(p[3])) {
+            cur = new_token(TK_RESERVED, cur, p, 3);
+            p += 3;
+            continue;
+        }
+
         if (startswith(p, "==") || startswith(p, "!=") || startswith(p, "<=") ||
             startswith(p, ">=")) {
             cur = new_token(TK_RESERVED, cur, p, 2);

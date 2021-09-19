@@ -15,6 +15,9 @@ void error_at(char *loc, char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
 
+  int i;
+  int **x(int);
+  int **y[4][5];
   int pos = loc - user_input;
   fprintf(stderr, "%s\n", user_input);
   fprintf(stderr, "%*s", pos, " ");
@@ -101,6 +104,89 @@ void program() {
 }
 
 Node *stmt() {
+  if (consume("if")) {
+    expect("(");
+    Node *if_condition = expr();
+    expect(")");
+    Node *if_stmt = stmt();
+    if (consume("else")) {
+      Node *else_stmt = stmt();
+      Node *node_stmt = new_node(ND_ELSE, if_stmt, else_stmt);
+      return new_node(ND_IF, if_condition, node_stmt);
+    } else {
+      return new_node(ND_IF, if_condition, if_stmt);
+    }
+  }
+
+  if (consume("while")) {
+    expect("(");
+    Node *condition = expr();
+    expect(")");
+    Node *while_stmt = stmt();
+    return new_node(ND_WHILE, condition, while_stmt);
+  }
+
+  if (consume("for")) {
+    expect("(");
+    // 1
+    Node *first, *second, *third;
+    if (consume(";")) {
+    } else {
+      first = expr();
+      expect(";");
+    }
+    // 2
+    if (consume(";")) {}
+    else {
+      second = expr();
+      expect(";");
+    }
+    if (consume(";")) {}
+    else {
+      third = expr();
+      expect(";");
+    }
+    expect(")");
+    Node *for_stmt = stmt();
+    if (first) {
+      if (second) {
+        if (third) {
+          Node *final = new_node(ND_FOR, third, for_stmt);
+          Node *semi_final = new_node(ND_FOR, second, final);
+          return new_node(ND_FOR, first, semi_final);
+        } else {
+          Node *semi_final = new_node(ND_FOR, second, for_stmt);
+          return new_node(ND_FOR, first, semi_final);
+        }
+      } else {
+        if (third) {
+          Node *final = new_node(ND_FOR, third, for_stmt);
+          return new_node(ND_FOR, first, final);
+        } else {
+          return new_node(ND_FOR, first, for_stmt);
+        }
+      }
+    } else {
+      if (second) {
+        if (third) {
+          Node *final = new_node(ND_FOR, third, for_stmt);
+          return new_node(ND_FOR, second, final);
+        } else {
+          return new_node(ND_FOR, second, for_stmt);
+        }
+      } else {
+        if (third) {
+          return new_node(ND_FOR, third, for_stmt);
+        } else {
+          Node *for_node = calloc(1, sizeof(Node));
+          for_node->kind = ND_FOR;
+          for_node->lhs = for_stmt;
+          return for_node;
+        }
+      }
+    }
+  }
+
   Node *node;
   if (consume("return")) {
     node = calloc(1, sizeof(Node));

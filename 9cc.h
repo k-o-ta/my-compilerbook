@@ -50,6 +50,10 @@ typedef enum {
   ND_LE,
   ND_NUM,
   ND_RETURN,
+  ND_IF,
+  ND_ELSE,
+  ND_WHILE,
+  ND_FOR,
 } NodeKind;
 
 
