@@ -6,6 +6,7 @@ unsigned long int label_num = 0;
 /* 変数のアドレスを計算してスタックにプッシュする */
 void gen_lval(Node *node) {
   if (node->kind != ND_LVAR) error("代入の左辺値が変数ではありません");
+  printf("#---gen_lvar\n");
   printf("  mov rax, rbp\n");
   printf("  sub rax, %d\n", node->offset);
   printf("  push rax\n");
@@ -18,12 +19,17 @@ void gen(Node *node) {
       printf("  push %d\n", node->val);
       return;
     case ND_LVAR:
+      printf("#---ND_LVAR_START\n");
+      printf("#---ND_LVAR_GEN_LVAR_START\n");
       gen_lval(node);
+      printf("#---ND_LVAR_GEN_LVAR_END\n");
       printf("  pop rax\n");
       printf("  mov rax, [rax]\n");
       printf("  push rax\n");
+      printf("#---ND_LVAR_END\n");
       return;
     case ND_ASSIGN:
+      printf("#---assign start\n");
       gen_lval(node->lhs);
       gen(node->rhs);
 
@@ -31,8 +37,10 @@ void gen(Node *node) {
       printf("  pop rax\n");
       printf("  mov [rax], rdi\n");
       printf("  push rdi\n");
+      printf("#---assign end\n");
       return;
     case ND_RETURN:
+      printf("#--return\n");
       gen(node->lhs);
       printf("  pop rax\n");
       printf("  mov rsp, rbp\n");
@@ -45,6 +53,7 @@ void gen(Node *node) {
       switch (node->rhs->kind) {
           case ND_ELSE:
               printf("  pop rax\n");
+              printf("  push rax\n"); // while loopを1回も実行しないとstackframeがずれる
               printf("  cmp rax, 0\n");
               printf("  je .Lelse%ld\n", label);
               gen(node->rhs->lhs);
@@ -55,13 +64,31 @@ void gen(Node *node) {
               return;
           default:
               printf("  pop rax\n");
+              printf("  push rax\n"); // while loopを1回も実行しないとstackframeがずれる
               printf("  cmp rax, 0\n");
               printf("  je .Lend%ld\n", label);
               gen(node->rhs);
               printf(".Lend%ld:\n", label);
               return;
       }
-  }
+    case ND_WHILE:
+      label = label_num++;
+      printf(".Lbegin%ld:\n", label);
+      printf("#begin while cond\n");
+      gen(node->lhs);
+      printf("#end while cond\n" );
+      printf("  pop rax\n");
+      printf("  push rax\n"); // while loopを1回も実行しないとstackframeがずれる
+      printf("  cmp rax, 0\n");
+      printf("  je .Lend%ld\n", label);
+      printf("#begin while do\n" );
+      gen(node->rhs);
+      printf("#end while do\n");
+      printf("  jmp .Lbegin%ld\n", label);
+      printf(".Lend%ld:\n", label);
+//      printf("  push 1\n");
+      return;
+    }
 
   gen(node->lhs);
   gen(node->rhs);
@@ -119,6 +146,7 @@ void code_gen() {
   for (int i = 0; code[i]; i++) {
     gen(code[i]);
 
+    printf("# before pop rax%d\n",i);
     printf("  pop rax\n");
   }
 
