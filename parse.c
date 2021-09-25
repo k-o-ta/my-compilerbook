@@ -37,7 +37,8 @@ bool consume(char *op) {
 }
 
 Token *consume_ident() {
-  if (token->kind != TK_IDENT) return NULL;
+  if (token->kind != TK_IDENT)
+    return NULL;
   Token *t = token;
   token = token->next;
   return t;
@@ -52,7 +53,8 @@ void expect(char *op) {
 }
 
 int expect_number() {
-  if (token->kind != TK_NUM) error_at(token->str, "数ではありません");
+  if (token->kind != TK_NUM)
+    error_at(token->str, "数ではありません");
   int val = token->val;
   token = token->next;
   return val;
@@ -138,13 +140,13 @@ Node *stmt() {
     }
     // 2
     if (consume(";")) {
-        second = NULL;
+      second = NULL;
     } else {
       second = expr();
       expect(";");
     }
     if (consume(";")) {
-       third = NULL;
+      third = NULL;
     } else {
       third = expr();
       expect(";");
@@ -172,7 +174,8 @@ Node *expr() { return assign(); }
 
 Node *assign() {
   Node *node = equality();
-  if (consume("=")) node = new_node(ND_ASSIGN, node, assign());
+  if (consume("="))
+    node = new_node(ND_ASSIGN, node, assign());
 
   return node;
 }
@@ -232,8 +235,10 @@ Node *mul() {
 }
 
 Node *unary() {
-  if (consume("+")) return unary();
-  if (consume("-")) return new_node(ND_SUB, new_node_num(0), unary());
+  if (consume("+"))
+    return unary();
+  if (consume("-"))
+    return new_node(ND_SUB, new_node_num(0), unary());
   return primary();
 }
 
