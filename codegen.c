@@ -13,6 +13,9 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
+    if (node == NULL) {
+       return;
+    }
     unsigned long int label;
     switch (node->kind) {
     case ND_NUM:
@@ -87,6 +90,29 @@ void gen(Node *node) {
       printf("  jmp .Lbegin%ld\n", label);
       printf(".Lend%ld:\n", label);
 //      printf("  push 1\n");
+      return;
+    case ND_FOR:
+        label = label_num++;
+        printf("#begin for1\n");
+        gen(node->lhs);
+        printf("#end for1\n");
+        printf(".Lbegin%ld:\n", label);
+        if (node->rhs->lhs != NULL) {
+          printf("#begin for2\n");
+          gen(node->rhs->lhs);
+          printf("#end for2\n");
+          printf("  pop rax\n");
+          printf("  cmp rax, 0\n");
+          printf("  je .Lend%ld\n", label);
+        }
+        printf("#begin for stmt\n");
+        gen(node->rhs->rhs->lhs);
+        printf("#end for stmt\n");
+        printf("#begin for3\n");
+        gen(node->rhs->rhs->rhs);
+        printf("#end for3\n");
+        printf("  jmp .Lbegin%ld\n", label);
+        printf(".Lend%ld:\n", label);
       return;
     }
 

@@ -60,7 +60,12 @@ assert 5  'foo=12;bar=34;baz=5; if(foo == 13) return bar; else return baz;'
 assert 3  'a=1; a = a + 1; a = a + 1; return a;'
 assert 9 'a=9;2+3;  return a;'
 assert 6  'a=2; while(a < 3) a = a + 4; return a;'
+assert 10 'a=2; while(a < 3) a = a + 4; b = a + 4; return b;'
 assert 5  'a=5; while(a < 3) return a; return a;'
 assert 16 'a=1; while(a < 9) a = a + a; return a;'
+assert 3  'a=0;for (i = 0; i < 3; i = i + 1;) a = a + 1; return a;'
+assert 3  'a=0;i=0;for (; i < 3; i = i + 1;) a = a + 1; return a;'
+assert 3  'for(i=0;;i=i+1;) if(i > 2) return i;'
+assert 3  'for(i=0;i<3;;) i=i+1; return i;'
 
 echo OK

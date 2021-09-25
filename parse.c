@@ -131,60 +131,29 @@ Node *stmt() {
     // 1
     Node *first, *second, *third;
     if (consume(";")) {
+      first = NULL;
     } else {
       first = expr();
       expect(";");
     }
     // 2
-    if (consume(";")) {}
-    else {
+    if (consume(";")) {
+        second = NULL;
+    } else {
       second = expr();
       expect(";");
     }
-    if (consume(";")) {}
-    else {
+    if (consume(";")) {
+       third = NULL;
+    } else {
       third = expr();
       expect(";");
     }
     expect(")");
     Node *for_stmt = stmt();
-    if (first) {
-      if (second) {
-        if (third) {
-          Node *final = new_node(ND_FOR, third, for_stmt);
-          Node *semi_final = new_node(ND_FOR, second, final);
-          return new_node(ND_FOR, first, semi_final);
-        } else {
-          Node *semi_final = new_node(ND_FOR, second, for_stmt);
-          return new_node(ND_FOR, first, semi_final);
-        }
-      } else {
-        if (third) {
-          Node *final = new_node(ND_FOR, third, for_stmt);
-          return new_node(ND_FOR, first, final);
-        } else {
-          return new_node(ND_FOR, first, for_stmt);
-        }
-      }
-    } else {
-      if (second) {
-        if (third) {
-          Node *final = new_node(ND_FOR, third, for_stmt);
-          return new_node(ND_FOR, second, final);
-        } else {
-          return new_node(ND_FOR, second, for_stmt);
-        }
-      } else {
-        if (third) {
-          return new_node(ND_FOR, third, for_stmt);
-        } else {
-          Node *for_node = calloc(1, sizeof(Node));
-          for_node->kind = ND_FOR;
-          for_node->lhs = for_stmt;
-          return for_node;
-        }
-      }
-    }
+    Node *final = new_node(ND_FOR, third, for_stmt);
+    Node *semi_final = new_node(ND_FOR, second, final);
+    return new_node(ND_FOR, first, semi_final);
   }
 
   Node *node;
