@@ -67,5 +67,12 @@ assert 3  'a=0;for (i = 0; i < 3; i = i + 1;) a = a + 1; return a;'
 assert 3  'a=0;i=0;for (; i < 3; i = i + 1;) a = a + 1; return a;'
 assert 3  'for(i=0;;i=i+1;) if(i > 2) return i;'
 assert 3  'for(i=0;i<3;;) i=i+1; return i;'
+assert 3  'a=1; if(a < 3){a=a+1;a=a+1;}return a;'
+assert 1  'a=1; if(a > 3){}return a;'
+assert 4  'a=0; while(a < 3) {a=a+1; a=a+1;} return a;'
+assert 2  'a=2; while(a > 3) {} return a;'
+assert 6  'a=0;for (i=0; i<3; i=i+1;){a=a+1;a=a+1;}return a;'
+assert 6  'a=0;i=0;for (;i<3;i=i+1;){a=a+1;a=a+1;}return a;'
+assert 4  'for(i=0;i<3;;) {i=i+1;i=i+1;} return i;'
 
 echo OK

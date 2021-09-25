@@ -159,6 +159,25 @@ Node *stmt() {
   }
 
   Node *node;
+
+  if (consume("{")) {
+    int stmt_count = 0;
+    int threshold = 100;
+    Node *arr = calloc(threshold, sizeof(Node));
+    while (!consume("}")) {
+      arr[stmt_count++] = *stmt();
+
+      if ((stmt_count % threshold) == (threshold - 1)) {
+        arr = realloc(arr, (threshold + stmt_count) * sizeof(Node));
+      }
+    }
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_BLOCK;
+    node->lhs = arr;
+    node->block_count = stmt_count;
+    return node;
+  }
+
   if (consume("return")) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_RETURN;
