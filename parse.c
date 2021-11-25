@@ -44,6 +44,14 @@ Token *consume_ident() {
   return t;
 }
 
+Token *consume_number() {
+  if (token->kind != TK_NUM)
+    return NULL;
+  Token *t = token;
+  token = token->next;
+  return t;
+}
+
 void expect(char *op) {
   if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len)) {
@@ -95,6 +103,7 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
+Node *argument_expression();
 
 Node *code[100];
 void program() {
@@ -272,6 +281,19 @@ Node *primary() {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
 
+    if (consume("(")) {
+      node->kind = ND_CALL;
+      node->func_name = (char*)malloc(sizeof(char) * sizeof(tok->len));
+      strncpy(node->func_name, tok->str, tok->len);
+      int args_num = 0;
+      if (!consume(")")) {
+        node->lhs = argument_expression(&args_num);
+        expect(")");
+      }
+      node->args_num = args_num;
+      return node;
+    }
+
     LVar *lvar = find_lvar(tok);
     if (lvar) {
       node->offset = lvar->offset;
@@ -292,4 +314,17 @@ Node *primary() {
   }
 
   return new_node_num(expect_number());
+}
+
+Node *argument_expression(int *args_num) {
+  Node *node = relational();
+  (*args_num)++;
+  for(;;) {
+    if (consume(",")) {
+      (*args_num)++;
+      node = new_node(ND_ARG, node, relational());
+    } else {
+      return node;
+    }
+  }
 }

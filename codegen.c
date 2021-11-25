@@ -125,6 +125,24 @@ void gen(Node *node) {
     }
     printf("#end block\n");
     return;
+  case ND_CALL:
+    if (node->lhs) {
+      gen(node->lhs);
+      char regs[6][4] = { "rdi", "rsi", "rdx", "r8", "r9" };
+      for (int i = node->args_num - 1; i >= 0; i--)
+        printf("  pop %s\n", regs[i]);
+    }
+
+    printf("#begin function call\n");
+    printf("  call %s\n", node->func_name);
+    printf("#end function call\n");
+    return;
+  case ND_ARG:
+    printf("#begin function arg\n");
+    gen(node->lhs);
+    if (node->rhs)
+      gen(node->rhs);
+    printf("#end function arg\n");
   }
 
   gen(node->lhs);

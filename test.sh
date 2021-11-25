@@ -3,7 +3,7 @@ assert() {
   expected="$1" input="$2"
 
   ./9cc "$input" > tmp.s
-  cc -o tmp tmp.s
+  cc -o tmp tmp.s call.o
   ./tmp
   actual="$?"
 
@@ -74,5 +74,7 @@ assert 2  'a=2; while(a > 3) {} return a;'
 assert 6  'a=0;for (i=0; i<3; i=i+1;){a=a+1;a=a+1;}return a;'
 assert 6  'a=0;i=0;for (;i<3;i=i+1;){a=a+1;a=a+1;}return a;'
 assert 4  'for(i=0;i<3;;) {i=i+1;i=i+1;} return i;'
+assert 0  'foo(); return 0;'
+assert 0  'bar(5, 7); return 0;'
 
 echo OK
