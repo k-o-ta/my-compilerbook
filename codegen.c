@@ -134,7 +134,10 @@ void gen(Node *node) {
     }
 
     printf("#begin function call\n");
+    printf("  mov rbx, rsp\n");
+    printf("  and rsp, 0xfffffffffffffff0\n");
     printf("  call %s\n", node->func_name);
+    printf("  mov rsp, rbx\n");
     printf("#end function call\n");
     return;
   case ND_ARG:
