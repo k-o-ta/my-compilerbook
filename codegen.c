@@ -115,6 +115,28 @@ void gen(Node *node) {
     printf("  jmp .Lbegin%ld\n", label);
     printf(".Lend%ld:\n", label);
     return;
+  case ND_FUNC:
+    printf("%s:\n", node->func_name);
+    printf("#start function prolog\n");
+    printf("  push rbp\n");
+    printf("  mov rbp, rsp\n");
+    printf("  sub rsp, %d\n", node->args_num * 8);
+    printf("#end function prolog\n");
+    gen(node->lhs);
+    gen(node->rhs);
+    printf("#start function epilog\n");
+    printf("  mov rsp, rbp\n");
+    printf("  pop rbp\n");
+    printf("  ret\n");
+    printf("#end function epilog\n");
+    return;
+  case ND_VARGS:
+    printf("push rdi\n");
+    printf("push rsi\n");
+    printf("push rdx\n");
+    printf("push rcx\n");
+    printf("push r8\n");
+    printf("push r9\n");
   case ND_BLOCK:
     printf("#begin block\n");
     for (int i = 0; i < node->block_count; i++) {

@@ -44,6 +44,26 @@ Token *consume_ident() {
   return t;
 }
 
+bool check_func_definition() {
+  if (token->kind != TK_IDENT) {
+    return false;
+  }
+
+  if (memcmp(token->next->str, "(", token->next->len) != 0) {
+    return false;
+  }
+
+  Token *arg = token->next->next;
+  while (memcmp(arg->str, ")", arg->len) == 0) {
+    arg = arg->next;
+  }
+  if (memcmp(arg->next->str, "{", arg->next->len) != 0) {
+    return false;
+  }
+
+  return true;
+}
+
 Token *consume_number() {
   if (token->kind != TK_NUM)
     return NULL;
@@ -95,6 +115,7 @@ Node *new_node_num(int val) {
 
 void program();
 Node *stmt();
+Node *vargs_list();
 Node *expr();
 Node *assign();
 Node *equality();
@@ -167,7 +188,26 @@ Node *stmt() {
     return new_node(ND_FOR, first, semi_final);
   }
 
+  if(check_func_definition()) {
+    consume_ident();
+    expect("(");
+    Node *left = vargs_list();
+    expect(")");
+    Node *right = stmt();
+    Node *func =  new_node(ND_FUNC, left, right);
+    return func;
+  }
+
+//  Token *tok = consume_ident();
+//  if(tok) {
+//    Node *left = vargs_list();
+//    Node *right = stmt();
+//    Node *func =  new_node(ND_FUNC, left, right);
+//    return func;
+//  }
+//
   Node *node;
+
 
   if (consume("{")) {
     int stmt_count = 0;
@@ -195,6 +235,16 @@ Node *stmt() {
     node = expr();
   }
   expect(";");
+  return node;
+}
+
+Node *vargs_list() {
+  Node *node = primary();
+  if(node) {
+    while(consume(",")) {
+      node = new_node(ND_VARGS, node, primary());
+    }
+  }
   return node;
 }
 
