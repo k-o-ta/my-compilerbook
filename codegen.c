@@ -122,8 +122,12 @@ void gen(Node *node) {
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, %d\n", node->args_num * 8);
     printf("#end function prolog\n");
-    gen(node->lhs);
+    if(!node->lhs) {
+      gen(node->lhs);
+    }
+    printf("#start function stmt\n");
     gen(node->rhs);
+    printf("#end function stmt\n");
     printf("#start function epilog\n");
     printf("  mov rsp, rbp\n");
     printf("  pop rbp\n");
@@ -143,6 +147,7 @@ void gen(Node *node) {
       if (i != 0) {
         printf(" pop rax\n");
       }
+      printf("#block %d\n", i);
       gen(&node->lhs[i]);
     }
     printf("#end block\n");
@@ -217,15 +222,15 @@ void gen(Node *node) {
 void code_gen() {
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
-  printf("main:\n");
-
-  printf("  push rbp\n");
-  printf("  mov rbp, rsp\n");
-  if (locals)
-    printf("  sub rsp, %d\n", locals->offset);
-
+//  printf("main:\n");
+//
+//  printf("  push rbp\n");
+//  printf("  mov rbp, rsp\n");
   for (int i = 0; code[i]; i++) {
     gen(code[i]);
+
+    if (locals)
+      printf("  sub rsp, %d\n", locals->offset);
 
     printf("# before pop rax%d\n", i);
     printf("  pop rax\n");

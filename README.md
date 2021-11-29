@@ -11,5 +11,5 @@ gdb tmp
 set disassembly-flavor intel
 layout asm
 layout regs
-break foo
+break main
 run

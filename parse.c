@@ -54,7 +54,7 @@ bool check_func_definition() {
   }
 
   Token *arg = token->next->next;
-  while (memcmp(arg->str, ")", arg->len) == 0) {
+  while (memcmp(arg->str, ")", arg->len) != 0) {
     arg = arg->next;
   }
   if (memcmp(arg->next->str, "{", arg->next->len) != 0) {
@@ -63,6 +63,7 @@ bool check_func_definition() {
 
   return true;
 }
+
 
 Token *consume_number() {
   if (token->kind != TK_NUM)
@@ -189,12 +190,17 @@ Node *stmt() {
   }
 
   if(check_func_definition()) {
-    consume_ident();
+    Token *token = consume_ident();
     expect("(");
-    Node *left = vargs_list();
-    expect(")");
+    Node *left = NULL;
+    if (!consume(")")) {
+      left = vargs_list();
+      expect(")");
+    }
     Node *right = stmt();
     Node *func =  new_node(ND_FUNC, left, right);
+    func->func_name = (char*)malloc(sizeof(char) * sizeof(token->len));
+    strncpy(func->func_name, token->str, token->len);
     return func;
   }
 
