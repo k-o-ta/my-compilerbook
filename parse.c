@@ -116,7 +116,7 @@ Node *new_node_num(int val) {
 
 void program();
 Node *stmt();
-Node *vargs_list();
+Node *vargs_list(int *count);
 Node *expr();
 Node *assign();
 Node *equality();
@@ -193,14 +193,16 @@ Node *stmt() {
     Token *token = consume_ident();
     expect("(");
     Node *left = NULL;
+    int args_num = 0;
     if (!consume(")")) {
-      left = vargs_list();
+      left = vargs_list(&args_num);
       expect(")");
     }
     Node *right = stmt();
     Node *func =  new_node(ND_FUNC, left, right);
     func->func_name = (char*)malloc(sizeof(char) * sizeof(token->len));
     strncpy(func->func_name, token->str, token->len);
+    func->args_num = args_num;
     return func;
   }
 
@@ -244,10 +246,12 @@ Node *stmt() {
   return node;
 }
 
-Node *vargs_list() {
+Node *vargs_list(int *count) {
   Node *node = primary();
+  *count = 1;
   if(node) {
     while(consume(",")) {
+      (*count)++;
       node = new_node(ND_VARGS, node, primary());
     }
   }

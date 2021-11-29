@@ -120,7 +120,26 @@ void gen(Node *node) {
     printf("#start function prolog\n");
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
-    printf("  sub rsp, %d\n", node->args_num * 8);
+
+    if (node->args_num >= 1)
+      printf("push rdi\n");
+    if (node->args_num >= 2)
+      printf("push rsi\n");
+    if (node->args_num >= 3)
+      printf("push rdx\n");
+    if (node->args_num >= 4)
+      printf("push rcx\n");
+    if (node->args_num >= 5)
+      printf("push r8\n");
+    if (node->args_num >= 6)
+      printf("push r9\n");
+
+    if (locals) {
+      printf("  sub rsp, %d\n", locals->offset);
+    } else {
+      printf("  sub rsp, %d\n", node->args_num * 8);
+    }
+
     printf("#end function prolog\n");
     if(!node->lhs) {
       gen(node->lhs);
@@ -165,6 +184,8 @@ void gen(Node *node) {
     printf("  and rsp, 0xfffffffffffffff0\n");
     printf("  call %s\n", node->func_name);
     printf("  mov rsp, rbx\n");
+    // 関数の戻り地はraxに入っている。このコンパイラはstmtの結果をstackトップに積む
+    printf("  push rax\n");
     printf("#end function call\n");
     return;
   case ND_ARG:

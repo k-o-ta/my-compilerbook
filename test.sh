@@ -76,5 +76,8 @@ assert 6  'main() {a=0;i=0;for (;i<3;i=i+1;){a=a+1;a=a+1;}return a;}'
 assert 4  'main() {for(i=0;i<3;;) {i=i+1;i=i+1;} return i;}'
 assert 0  'main() {foo(); return 0;}'
 assert 0  'main() {bar(5, 7+8); return 0;}'
-
+assert 5  'sum(x) {return 5;} main() {return sum(3);}'
+assert 5  'sum(x) {return x;} main() {return sum(5);}'
+assert 12 'sum(x, y) {return x+y;} main() {return sum(5, 7);}'
+assert 10 'sum(x, y) {a=3; b=4;return x+y+a+b;} main() {x=1; y=2;return sum(x, y);}'
 echo OK
