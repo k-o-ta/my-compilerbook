@@ -80,4 +80,6 @@ assert 5  'sum(x) {return 5;} main() {return sum(3);}'
 assert 5  'sum(x) {return x;} main() {return sum(5);}'
 assert 12 'sum(x, y) {return x+y;} main() {return sum(5, 7);}'
 assert 10 'sum(x, y) {a=3; b=4;return x+y+a+b;} main() {x=1; y=2;return sum(x, y);}'
+assert 4  'main() {x = 3; y = &x; return *y+1;}'
+assert 3  'main() {x = 3; y = 5; z = &y + 8; return *z;}'
 echo OK

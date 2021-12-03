@@ -194,6 +194,20 @@ void gen(Node *node) {
     if (node->rhs)
       gen(node->rhs);
     printf("#end function arg\n");
+    return;
+  case ND_ADDR:
+    printf("#begin addr\n");
+    gen_lval(node->lhs);
+    printf("#end addr\n");
+    return;
+  case ND_DEREF:
+    printf("#begin deref\n");
+    gen(node->lhs);
+    printf("  pop rax\n");
+    printf("  mov rax, [rax]\n");
+    printf("  push rax\n");
+    printf("#end deref\n");
+    return;
   }
 
   gen(node->lhs);

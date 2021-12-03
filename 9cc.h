@@ -38,6 +38,8 @@ extern Token *token;
 extern LVar *locals;
 
 typedef enum {
+  ND_ADDR,
+  ND_DEREF,
   ND_ADD,
   ND_SUB,
   ND_MUL,

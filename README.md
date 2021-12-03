@@ -13,3 +13,9 @@ layout asm
 layout regs
 break main
 run
+
+スタックtopの値
+x $rsp
+
+任意のメモリの値
+x $0x7ffd5e61dbc8
