@@ -216,6 +216,7 @@ void gen(Node *node) {
   printf(" pop rdi\n");
   printf(" pop rax\n");
 
+  //  計算結果をstack topに置く
   switch (node->kind) {
   case ND_ADD:
     printf("  add rax, rdi\n");
