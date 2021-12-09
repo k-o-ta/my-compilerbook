@@ -3,15 +3,16 @@ http://port70.net/~nsz/c/c11/n1570.html#6.5.1
 http://port70.net/~nsz/c/c11/n1570.html#6.8
 http://port70.net/~nsz/c/c11/n1570.html#A.1
 program    = definition*
-definition = ident "(" varargs-list )" "{" stmt* "}"
+definition = "int" ident "(" varargs-list )" "{" stmt* "}"
 stmt       = expr ";"
            | "{" stmt* "}"
            | "if" "(" expr ")" stmt ("else" stmt)?
            | "while" "(" expr ")" stmt
            | "for" "(" expr? ";" expr? ";" expr? ")" stmt
            | "return" expr ";"
-vargs-list = ident?
-           | vargs-list, ident
+           | "int" idnet ";"
+vargs-list = ("int" ident)?
+           | vargs-list, "int" ident
 expr       = assign
 assign     = equality ("=" assign)?
 equality   = relational ("==" relational | "!=" relational)*

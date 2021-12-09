@@ -137,20 +137,22 @@ void program() {
   }
 }
 Node *definition() {
-  Token *token = consume_ident();
-  expect("(");
-  Node *left = NULL;
-  int args_num = 0;
-  if (!consume(")")) {
-    left = vargs_list(&args_num);
-    expect(")");
+  if( consume("int")) {
+    Token *token = consume_ident();
+    expect("(");
+    Node *left = NULL;
+    int args_num = 0;
+    if (!consume(")")) {
+      left = vargs_list(&args_num);
+      expect(")");
+    }
+    Node *right = stmt();
+    Node *func =  new_node(ND_FUNC, left, right);
+    func->func_name = (char*)malloc(sizeof(char) * sizeof(token->len));
+    strncpy(func->func_name, token->str, token->len);
+    func->args_num = args_num;
+    return func;
   }
-  Node *right = stmt();
-  Node *func =  new_node(ND_FUNC, left, right);
-  func->func_name = (char*)malloc(sizeof(char) * sizeof(token->len));
-  strncpy(func->func_name, token->str, token->len);
-  func->args_num = args_num;
-  return func;
 }
 
 Node *stmt() {
@@ -251,6 +253,28 @@ Node *stmt() {
     node->block_count = stmt_count;
     return node;
   }
+  if(consume("int")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_LVAR;
+    Token *tok = consume_ident();
+    LVar *lvar = calloc(1, sizeof(LVar));
+    lvar->next = locals;
+    lvar->name = tok->str;
+    lvar->len = tok->len;
+    if (locals) {
+      lvar->offset = locals->offset + 8;
+    } else {
+      lvar->offset = 8;
+    }
+    node->offset = lvar->offset;
+    locals = lvar;
+
+    //    expect("=");
+    //    Node *node = equality();
+    //    node = new_node(ND_ASSIGN, node, assign());
+    expect(";");
+    return node;
+  }
 
   if (consume("return")) {
     node = calloc(1, sizeof(Node));
@@ -264,15 +288,44 @@ Node *stmt() {
 }
 
 Node *vargs_list(int *count) {
-  Node *node = primary();
-  *count = 1;
-  if(node) {
+  if (consume("int")) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_VARGS;
+    Token *tok = consume_ident();
+    LVar *lvar = calloc(1, sizeof(LVar));
+    lvar->next = locals;
+    lvar->name = tok->str;
+    lvar->len = tok->len;
+    if (locals) {
+      lvar->offset = locals->offset + 8;
+    } else {
+      lvar->offset = 8;
+    }
+    node->offset = lvar->offset;
+    locals = lvar;
+
+    //  Node *node = primary();
+    *count = 1;
+
     while(consume(",")) {
       (*count)++;
-      node = new_node(ND_VARGS, node, primary());
+      expect("int");
+      node = new_node(ND_VARGS, node, NULL);
+      Token *tok = consume_ident();
+      LVar *lvar = calloc(1, sizeof(LVar));
+      lvar->next = locals;
+      lvar->name = tok->str;
+      lvar->len = tok->len;
+      if (locals) {
+        lvar->offset = locals->offset + 8;
+      } else {
+        lvar->offset = 8;
+      }
+      node->offset = lvar->offset;
+      locals = lvar;
     }
+    return node;
   }
-  return node;
 }
 
 Node *expr() { return assign(); }
@@ -379,17 +432,18 @@ Node *primary() {
     if (lvar) {
       node->offset = lvar->offset;
     } else {
-      lvar = calloc(1, sizeof(LVar));
-      lvar->next = locals;
-      lvar->name = tok->str;
-      lvar->len = tok->len;
-      if (locals) {
-        lvar->offset = locals->offset + 8;
-      } else {
-        lvar->offset = 8;
-      }
-      node->offset = lvar->offset;
-      locals = lvar;
+      error_at(token->str, "変数が見つかりません");
+//      lvar = calloc(1, sizeof(LVar));
+//      lvar->next = locals;
+//      lvar->name = tok->str;
+//      lvar->len = tok->len;
+//      if (locals) {
+//        lvar->offset = locals->offset + 8;
+//      } else {
+//        lvar->offset = 8;
+//      }
+//      node->offset = lvar->offset;
+//      locals = lvar;
     }
     return node;
   }
