@@ -82,4 +82,7 @@ assert 12 'int sum(int x, int y) {return x+y;} int main() {return sum(5, 7);}'
 assert 10 'int sum(int x, int y) {int a; int b; a=3; b=4;return x+y+a+b;} int main() {int x; int y; x=1; y=2;return sum(x, y);}'
 assert 4  'int main() {int x; int y; x = 3; y = &x; return *y+1;}'
 assert 3  'int main() {int x; int y; int z; x = 3; y = 5; z = &y + 8; return *z;}'
+assert 3  'int main() {int x; int *y; y = &x; *y = 3; return x;}'
+assert 4  'int main() {int x; int *y; y = &x; *y = 3 + 1; return x;}'
+assert 3  'int main() {int x; int *y; int **z; y = &x; z = &y; **z = 3; return x;}'
 echo OK

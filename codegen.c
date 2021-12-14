@@ -5,6 +5,8 @@ unsigned long int label_num = 0;
 
 /* 変数のアドレスを計算してスタックにプッシュする */
 void gen_lval(Node *node) {
+  if (node->kind == ND_DEREF)
+    return gen(node->lhs);
   if (node->kind != ND_LVAR)
     error("代入の左辺値が変数ではありません");
   printf("#---gen_lvar\n");

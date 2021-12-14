@@ -256,11 +256,20 @@ Node *stmt() {
   if(consume("int")) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = INT;
+    while(consume("*")) {
+      Type *tmp = type;
+      type = calloc(1, sizeof(Type));
+      type->ty = PTR;
+      type->ptr_to = tmp;
+    }
     Token *tok = consume_ident();
     LVar *lvar = calloc(1, sizeof(LVar));
     lvar->next = locals;
     lvar->name = tok->str;
     lvar->len = tok->len;
+    lvar->type = type;
     if (locals) {
       lvar->offset = locals->offset + 8;
     } else {
@@ -433,17 +442,6 @@ Node *primary() {
       node->offset = lvar->offset;
     } else {
       error_at(token->str, "変数が見つかりません");
-//      lvar = calloc(1, sizeof(LVar));
-//      lvar->next = locals;
-//      lvar->name = tok->str;
-//      lvar->len = tok->len;
-//      if (locals) {
-//        lvar->offset = locals->offset + 8;
-//      } else {
-//        lvar->offset = 8;
-//      }
-//      node->offset = lvar->offset;
-//      locals = lvar;
     }
     return node;
   }

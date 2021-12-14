@@ -10,7 +10,7 @@ stmt       = expr ";"
            | "while" "(" expr ")" stmt
            | "for" "(" expr? ";" expr? ";" expr? ")" stmt
            | "return" expr ";"
-           | "int" idnet ";"
+           | "int" "*"*ident ";"
 vargs-list = ("int" ident)?
            | vargs-list, "int" ident
 expr       = assign

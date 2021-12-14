@@ -21,12 +21,19 @@ struct Token {
   int len;
 };
 
+typedef struct Type Type;
+struct Type {
+  enum { INT, PTR } ty;
+  struct Type *ptr_to;
+};
+
 typedef struct LVar LVar;
 struct LVar {
   LVar *next;
   char *name;
   int len;
   int offset;
+  Type *type;
 };
 
 void error(char *fmt, ...);
