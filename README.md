@@ -7,8 +7,9 @@ https://www.sigbus.info/compilerbook
 
 
 ### binaryをdebug
-```
-gdb tmp
+`gdb tmp`
+* 基本の始め方
+```asm
 set disassembly-flavor intel
 layout asm
 layout regs
@@ -16,8 +17,12 @@ break main
 run
 ```
 
-スタックtopの値
+* スタックtopの値
+```asm
 x $rsp
+```
 
-任意のメモリの値
+* 任意のメモリの値
+```asm
 x $0x7ffd5e61dbc8
+```
