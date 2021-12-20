@@ -3,7 +3,8 @@ assert() {
   expected="$1" input="$2"
 
   ./9cc "$input" > tmp.s
-  cc -o tmp tmp.s call.o step19.o
+  make helper
+  cc -o tmp tmp.s $(make show_helper -s)
   ./tmp
   actual="$?"
 
