@@ -78,6 +78,7 @@ struct Node {
   Node *rhs;
   int val;
   int offset; // ND_LVARのときだけ
+  Type *type; // ND_LVARのときだけ
   int block_count; // ND_BLOCKのときだけ
   char *func_name; // ND_CALL, ND_FUNCのときだけ
   int args_num; // ND_CALL, ND_FUNCのときだけ

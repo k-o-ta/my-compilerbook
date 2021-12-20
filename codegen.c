@@ -176,7 +176,7 @@ void gen(Node *node) {
   case ND_CALL:
     if (node->lhs) {
       gen(node->lhs);
-      char regs[6][4] = { "rdi", "rsi", "rdx", "r8", "r9" };
+      char regs[6][4] = { "rdi", "rsi", "rdx", "rcx", "r8" };
       for (int i = node->args_num - 1; i >= 0; i--)
         printf("  pop %s\n", regs[i]);
     }
@@ -219,8 +219,41 @@ void gen(Node *node) {
   printf(" pop rax\n");
 
   //  計算結果をstack topに置く
+  int ptr_offset = 0;
+  Type *var_type;
   switch (node->kind) {
   case ND_ADD:
+    if (node->lhs->kind == ND_LVAR) {
+      var_type = node->lhs->type;
+    } else if (node->rhs->kind == ND_LVAR) {
+      var_type = node->rhs->type;
+    }
+
+    if (var_type != NULL && var_type->ty == PTR) {
+      if (var_type->ptr_to->ty == PTR) {
+        ptr_offset = 8;
+      } else if (var_type->ptr_to->ty == INT) {
+        ptr_offset = 4;
+      }
+//      while(ptr_type->ty == PTR) {
+//        switch (ptr_type->ptr_to->ty) {
+//        case PTR:
+//          ptr_offset = ptr_offset + 8*;
+//          break;
+//        case INT:
+//          ptr_offset = ptr_offset + 4*;
+//          break;
+//        }
+//        ptr_type = ptr_type->ptr_to;
+//      }
+      printf("#begin ptr_add_sub\n");
+      if (node->lhs->kind == ND_LVAR) {
+        printf("  imul rdi, %d\n", ptr_offset);
+      } else if (node->rhs->kind == ND_LVAR) {
+        printf("  imul rax, %d\n", ptr_offset);
+      }
+      printf("#end ptr_add_sub\n");
+    }
     printf("  add rax, rdi\n");
     break;
   case ND_SUB:

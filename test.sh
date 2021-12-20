@@ -3,7 +3,7 @@ assert() {
   expected="$1" input="$2"
 
   ./9cc "$input" > tmp.s
-  cc -o tmp tmp.s call.o
+  cc -o tmp tmp.s call.o step19.o
   ./tmp
   actual="$?"
 
@@ -85,4 +85,9 @@ assert 3  'int main() {int x; int y; int z; x = 3; y = 5; z = &y + 8; return *z;
 assert 3  'int main() {int x; int *y; y = &x; *y = 3; return x;}'
 assert 4  'int main() {int x; int *y; y = &x; *y = 3 + 1; return x;}'
 assert 3  'int main() {int x; int *y; int **z; y = &x; z = &y; **z = 3; return x;}'
+assert 0  'int main() {int *p; malloc4(&p, 1, 2, 4, 8); int *q; return 0;}'
+assert 1  'int main() {int *p; malloc4(&p, 1, 2, 4, 8); int *q; q = p; return *q;}'
+assert 2  'int main() {int *p; malloc4(&p, 1, 2, 4, 8); int *q; q = p + 1; return *q;}'
+assert 4  'int main() {int *p; malloc4(&p, 1, 2, 4, 8); int *q; q = p + 2; return *q;}'
+assert 8  'int main() {int *p; malloc4(&p, 1, 2, 4, 8); int *q; q = p + 3; return *q;}'
 echo OK

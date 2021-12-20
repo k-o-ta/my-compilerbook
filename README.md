@@ -7,12 +7,14 @@ https://www.sigbus.info/compilerbook
 
 
 ### binaryをdebug
+```
 gdb tmp
 set disassembly-flavor intel
 layout asm
 layout regs
 break main
 run
+```
 
 スタックtopの値
 x $rsp

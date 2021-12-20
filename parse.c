@@ -208,33 +208,7 @@ Node *stmt() {
     return new_node(ND_FOR, first, semi_final);
   }
 
-//  if(check_func_definition()) {
-//    Token *token = consume_ident();
-//    expect("(");
-//    Node *left = NULL;
-//    int args_num = 0;
-//    if (!consume(")")) {
-//      left = vargs_list(&args_num);
-//      expect(")");
-//    }
-//    Node *right = stmt();
-//    Node *func =  new_node(ND_FUNC, left, right);
-//    func->func_name = (char*)malloc(sizeof(char) * sizeof(token->len));
-//    strncpy(func->func_name, token->str, token->len);
-//    func->args_num = args_num;
-//    return func;
-//  }
-
-//  Token *tok = consume_ident();
-//  if(tok) {
-//    Node *left = vargs_list();
-//    Node *right = stmt();
-//    Node *func =  new_node(ND_FUNC, left, right);
-//    return func;
-//  }
-//
   Node *node;
-
 
   if (consume("{")) {
     int stmt_count = 0;
@@ -276,6 +250,7 @@ Node *stmt() {
       lvar->offset = 8;
     }
     node->offset = lvar->offset;
+    node->type = lvar->type;
     locals = lvar;
 
     //    expect("=");
@@ -440,6 +415,7 @@ Node *primary() {
     LVar *lvar = find_lvar(tok);
     if (lvar) {
       node->offset = lvar->offset;
+      node->type = lvar->type;
     } else {
       error_at(token->str, "変数が見つかりません");
     }
