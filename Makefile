@@ -10,7 +10,7 @@ HELPER_OBJS=$(wildcard $(HELPER_DIRS)/*.o)
 
 $(OBJS): $(SRC_DIRS)/9cc.h
 
-helper:
+build_helper:
 	make -C $(PWD)/helper
 
 show_helper:

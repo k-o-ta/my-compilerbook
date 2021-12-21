@@ -3,7 +3,6 @@ assert() {
   expected="$1" input="$2"
 
   ./9cc "$input" > tmp.s
-  make helper
   cc -o tmp tmp.s $(make show_helper -s)
   ./tmp
   actual="$?"
@@ -16,6 +15,7 @@ assert() {
   fi
 }
 
+make build_helper
 assert 0  'int main() {return 0;}'
 assert 42 'int main() {return 42;}'
 assert 21 'int main() {return 5+20-4;}'
