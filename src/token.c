@@ -68,6 +68,12 @@ Token *tokenize(char *p) {
          continue;
        }
 
+       if (startswith(p, "sizeof") && !is_alnum_or_u_bar(p[6])) {
+         cur = new_token(TK_SIZEOF, cur, p, 6);
+         p += 6;
+         continue;
+       }
+
         if (strchr("=+-*/()<>{};,&", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;

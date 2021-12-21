@@ -81,6 +81,13 @@ void expect(char *op) {
   token = token->next;
 }
 
+bool consume_sizeof() {
+  if (token->kind != TK_SIZEOF)
+    return false;
+  token = token->next;
+  return true;
+}
+
 int expect_number() {
   if (token->kind != TK_NUM)
     error_at(token->str, "数ではありません");
@@ -127,6 +134,8 @@ Node *mul();
 Node *unary();
 Node *primary();
 Node *argument_expression();
+
+int sizeof_node(Node *node);
 
 Node *code[100];
 void program() {
@@ -377,6 +386,10 @@ Node *mul() {
 }
 
 Node *unary() {
+  if (consume_sizeof()) {
+     Node *n = unary();
+    return new_node_num(sizeof_node(n));
+  }
   if (consume("+"))
     return unary();
   if (consume("-"))
@@ -436,4 +449,53 @@ Node *argument_expression(int *args_num) {
       return node;
     }
   }
+}
+
+int sizeof_node(Node *node) {
+ switch (node->kind) {
+ case ND_ADDR:
+   return 4;
+ case ND_DEREF:
+   return sizeof_node(node->lhs);
+ case ND_ADD:
+ case ND_SUB:
+ case ND_MUL:
+ case ND_DIV: {
+   int left = sizeof_node(node->lhs);
+   int right = sizeof_node(node->lhs);
+   return ((left >= right)? left : right);
+ }
+ case ND_ASSIGN:
+   return sizeof_node(node->rhs);
+ case ND_LVAR: {
+   switch (node->type->ty) {
+   case INT:
+     return 4;
+   case PTR:
+     return 8;
+   default:
+     error_at(token->str, "型のサイズが未実装です");
+   }
+ }
+ case ND_EQ:
+ case ND_NE:
+ case ND_LT:
+ case ND_LE:
+     return 4;
+ case ND_NUM:
+   return 4;
+ case ND_CALL:
+   error_at(token->str, "not implemented yet");
+ default:
+   error_at(token->str, "sizeof演算子に入れることができません");
+// case ND_RETURN:
+// case ND_IF:
+// case ND_ELSE:
+// case ND_WHILE:
+// case ND_FOR:
+// case ND_BLOCK:
+// case ND_ARG:
+// case ND_FUNC:
+// case ND_VARGS:
+ }
 }
